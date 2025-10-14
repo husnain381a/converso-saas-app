@@ -3,18 +3,18 @@
 import { auth } from "@clerk/nextjs/server"
 import { createSupabaseClient } from "../supabase"
 
-export const createCompanion = async(formData: CreateCompanion) => {
-    const {userId: author} = await auth()
-    const supabase = createSupabaseClient()
+export const createCompanion = async (formData: CreateCompanion) => {
+  const { userId: author } = await auth()
+  const supabase = createSupabaseClient()
 
-    const {data, error} = await supabase
+  const { data, error } = await supabase
     .from('companions')
-    .insert({...formData, author})
+    .insert({ ...formData, author })
     .select()
 
-    if(error || !data) throw new Error(error?.message || 'Failed to create companion')
+  if (error || !data) throw new Error(error?.message || 'Failed to create companion')
 
-    return data[0]    
+  return data[0]
 }
 
 // Function to get all companions from the database with optional filters and pagination
@@ -55,3 +55,20 @@ export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }:
   // Return the list of companions
   return companions;
 };
+
+
+//Get only one companion
+
+export const getCompanion = async (id: string) => {
+  const supabase = createSupabaseClient()
+
+  const { data, error } = await supabase
+    .from("companions")
+    .select("*")
+    .eq("id", id)
+    .single()
+
+  if (error || !data) throw new Error(error?.message || "Companion not found")
+
+  return data
+}
