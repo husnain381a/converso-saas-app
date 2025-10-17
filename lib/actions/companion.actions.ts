@@ -118,5 +118,19 @@ export const getUserSessions = async (userId: string, limit = 10) => {
 
   if (error || !data) throw new Error(error?.message || "Not found")
 
-  return data.map((companions) => companions)
+   return data.map((item) => item.companions);
+}
+
+//Get companions created by user
+
+export const getUserCompanions = async (userId: string) => {
+  const supabase = createSupabaseClient()
+  const { data, error } = await supabase
+    .from("companions")
+    .select()
+    .eq('author', userId)
+
+  if (error || !data) throw new Error(error?.message || "Not found")
+
+  return data
 }
