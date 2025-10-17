@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server"
 import { createSupabaseClient } from "../supabase"
+import { equal } from "assert"
 
 export const createCompanion = async (formData: CreateCompanion) => {
   const { userId: author } = await auth()
@@ -71,4 +72,51 @@ export const getCompanion = async (id: string) => {
   if (error || !data) throw new Error(error?.message || "Companion not found")
 
   return data
+}
+
+//To add session history of companion
+
+export const addToSessionHistory = async (companionId: string) => {
+  const { userId } = await auth()
+  const supabase = createSupabaseClient()
+
+  const { data, error } = await supabase.from("session_history").insert({
+    companion_id: companionId,
+    user_id: userId
+  })
+
+  if (error || !data) throw new Error(error?.message || "Not found")
+
+  return data;
+}
+
+//To fetch session history of companion
+
+export const getRecentSessions = async (limit = 10) => {
+  const supabase = createSupabaseClient()
+  const { data, error } = await supabase
+    .from("session_history")
+    .select(`companions:companion_id(*)`)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error || !data) throw new Error(error?.message || "Not found")
+
+  return data.map((item) => item.companions);
+}
+
+//To get user session history
+
+export const getUserSessions = async (userId: string, limit = 10) => {
+  const supabase = createSupabaseClient()
+  const { data, error } = await supabase
+    .from("session_history")
+    .select(`companions:companion_id(*)`)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (error || !data) throw new Error(error?.message || "Not found")
+
+  return data.map((companions) => companions)
 }

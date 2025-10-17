@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { subjectsColors } from "@/constants";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,7 +39,7 @@ const CompanionsList = ({title, companions, classNames} : CompanionsListProps) =
         <TableCell>
           <Link href={`/companions/${companion.id}`}>
             <div className="flex items-center gap-2">
-              <div className="size-[72px] flex items-center justify-center rounded-lg max-md:hidden" style={{backgroundColor: companion.color}}>
+              <div className="size-[72px] flex items-center justify-center rounded-lg max-md:hidden" style={{ backgroundColor: subjectsColors[companion.subject as keyof typeof subjectsColors] }}>
                 <Image src={`/icons/${companion.subject}.svg`} alt={companion.subject} width={35} height={35}/>
               </div>
               <div className="flex flex-col gap-2">
